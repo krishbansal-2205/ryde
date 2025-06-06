@@ -2,17 +2,38 @@ import CustomButton from '@/components/CustomButton';
 import InputField from '@/components/InputField';
 import OAuth from '@/components/OAuth';
 import { icons, images } from '@/constants';
-import { Link } from 'expo-router';
+import { useSignIn } from '@clerk/clerk-expo';
+import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 
 const Signin = () => {
+   const { signIn, setActive, isLoaded } = useSignIn();
+
    const [form, setForm] = useState({
       email: '',
       password: '',
    });
 
-   const onSignInPress = () => {};
+   const onSignInPress = async () => {
+      if (!isLoaded) return;
+
+      try {
+         const signInAttempt = await signIn.create({
+            identifier: form.email,
+            password: form.password,
+         });
+
+         if (signInAttempt.status === 'complete') {
+            await setActive({ session: signInAttempt.createdSessionId });
+            router.replace('/(root)/(tabs)/home');
+         } else {
+            console.error(JSON.stringify(signInAttempt, null, 2));
+         }
+      } catch (err) {
+         console.error(JSON.stringify(err, null, 2));
+      }
+   };
 
    return (
       <ScrollView className='flex-1 bg-white'>

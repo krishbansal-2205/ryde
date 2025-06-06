@@ -1,12 +1,18 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { SignedIn, useUser } from '@clerk/clerk-expo';
+import React from 'react';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Home = () => {
-  return (
-    <View>
-      <Text>Home</Text>
-    </View>
-  )
-}
+   const { user } = useUser();
 
-export default Home
+   return (
+      <SafeAreaView>
+         <SignedIn>
+            <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
+         </SignedIn>
+      </SafeAreaView>
+   );
+};
+
+export default Home;
